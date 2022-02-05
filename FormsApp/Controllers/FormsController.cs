@@ -29,7 +29,7 @@ namespace FormsApp.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] FormDto dto)
+        public async Task<IActionResult> Create([FromBody] FormDto dto)
         {
             if (ModelState.IsValid)
             {
