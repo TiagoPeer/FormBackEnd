@@ -1,4 +1,4 @@
-﻿namespace Project2.Models
+﻿namespace FormsApp.Models
 {
     public class ActionResponse
     {

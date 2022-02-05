@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Project2.Data;
+using FormsApp.Data;
 using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);

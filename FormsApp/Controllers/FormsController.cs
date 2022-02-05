@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Project2.Data;
-using Project2.Dtos;
-using Project2.Models;
+using FormsApp.Data;
+using FormsApp.Dtos;
+using FormsApp.Models;
 
-namespace Project2.Controllers
+namespace FormsApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -22,29 +22,25 @@ namespace Project2.Controllers
         }
 
         [HttpGet("get-forms")]
-        public async Task<string> GetForms()
+        public async Task<IActionResult> GetForms()
         {
-
             var forms = await _dbContext.Forms.ToListAsync();
-
-            return "Ola";
-
-            //return JsonConvert.SerializeObject(forms);
+            return Ok(new ActionResponse("Ok", "200", JsonConvert.SerializeObject(forms)));
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm]FormDto dto)
+        public async Task<IActionResult> Create([FromForm] FormDto dto)
         {
             if (ModelState.IsValid)
             {
                 var form = _mapper.Map(dto, new Form());
-                _dbContext.Forms.Add(form);
+                await _dbContext.Forms.AddAsync(form);
                 await _dbContext.SaveChangesAsync();
 
                 return Ok(new ActionResponse("Created", "201", "Formulário criado com sucesso."));
             }
 
-            return Ok(new ActionResponse("BadRequest", "400", "Dados inválidos"));
+            return Ok(new ActionResponse("BadRequest", "400", "Dados inválidos."));
         }
 
         [HttpPut("mark-as-readed")]
@@ -54,12 +50,12 @@ namespace Project2.Controllers
 
             if (form == null)
             {
-                return Ok(new ActionResponse("BadRequest", "400", "Dados inválidos"));
+                return Ok(new ActionResponse("No Contet", "204", "O formulário não foi encontrado."));
             }
 
             form.Readed = true;
             await _dbContext.SaveChangesAsync();
-            return Ok("1");
+            return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
         }
 
         [HttpPut("mark-as-answered")]
@@ -69,12 +65,12 @@ namespace Project2.Controllers
 
             if (form == null)
             {
-                return Ok("0");
+                return Ok(new ActionResponse("No Contet", "204", "O formulário não foi encontrado."));
             }
 
             form.Answered = true;
             await _dbContext.SaveChangesAsync();
-            return Ok("1");
+            return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Project2.Dtos;
+using FormsApp.Dtos;
 using System.ComponentModel.DataAnnotations;
 
-namespace Project2.Models
+namespace FormsApp.Models
 {
     [AutoMap(typeof(FormDto))]
     public class Form
