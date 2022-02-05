@@ -1,67 +1,283 @@
 import React, { Component, useState } from 'react';
 
-export class Home extends Component {
-    static displayName = Home.name;
+function App() {
+    const [values, setValues] = useState({
+        name: "",
+        subject: "",
+        contact: "",
+        email: "",
+        message: ""
+    });
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: "",
-            subject: "",
-            contact: "",
-            email: "",
-            message: ""
-        };
-        this.inputChange = this.inputChange.bind(this);
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+    let handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            let res = await fetch("https://localhost:44479/forms/create", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json, text/plain',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    name: values.name,
+                    subject: values.subject,
+                    contact: values.contact,
+                    email: values.email,
+                    message: values.message,
+                }),
+            });
+            console.log(res);
+            let resJson = await res.json();
+            console.log(resJson);
+            if (res.status === 200) {
+                setValues({ ...values, name: "", email: "" })
+                console.log("User created successfully");
+            } else {
+                console.log("Some error occured");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    let inputHadle = (name, value) => {
+        console.log(name);
+        console.log(value);
+        setValues({ ...values, [name]: value })
     }
 
-    inputChange() {
+    return (
 
-    }
-
-    handleFormSubmit(e) {
-        e.prevenDefault();
-        console.log("Envia")
-    }
-
-    render() {
-        return (
-            <div className="form-container container">
-                <form onSubmit={this.handleFormSubmit(e)}>
-                    <div class="mb-3">
-                        <label class="form-label">Email address</label>
-                        <input type="email" class="form-control"/>
+        <div className="form-container container">
+            <form onSubmit={handleSubmit}>
+                <div className="row">
+                    <div className="col-12 col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Nome</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={values.name}
+                                placeholder="Nome"
+                                name="name"
+                                onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" />
+                    <div className="col-12 col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Assunto</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={values.subject}
+                                placeholder="Assunto"
+                                name="subject"
+                                onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" />
-                        <label class="form-check-label">Check me out</label>
+                    <div className="col-12 col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Contacto</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={values.contact}
+                                placeholder="Contacto"
+                                name="contact"
+                                onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-                </form>
-            </div>
+                    <div className="col-12 col-md-6">
+                        <div className="mb-3">
+                            <label className="form-label">Email</label>
+                            <input
+                                type="email"
+                                className="form-control"
+                                value={values.email}
+                                placeholder="Email"
+                                name="email"
+                                onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="mb-3">
+                            <textarea
+                                name="message"
+                                className="form-control"
+                                rows="3"
+                                name="message"
+                                value={values.message}
+                                onChange={(e) => inputHadle(e.target.name, e.target.value)}>
+                            </textarea>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-6">
+                        <div className="mb-3 form-check">
+                            <input type="checkbox" className="form-check-input" />
+                            <label className="form-check-label">Check me out</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" className="btn btn-primary">Enviar</button>
+            </form>
+        </div>
 
 
-            //<div className="form-container container">
-            //    <h1>Hello, world!</h1>
-            //    <p>Welcome to your new single-page application, built with:</p>
-            //    <ul>
-            //        <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-            //        <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-            //        <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-            //    </ul>
-            //    <p>To help you get started, we have also set up:</p>
-            //    <ul>
-            //        <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-            //        <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-            //        <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-            //    </ul>
-            //    <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-            //</div>
-        );
-    }
+
+
+        //<div className="App">
+        //    <form onSubmit={handleSubmit}>
+        //        <input
+        //            type="text"
+        //            value={values.name}
+        //            placeholder="Nome"
+        //            onChange={(e) => inputHadle(e.target.name, e.target.value)}
+        //        />
+        //        <input
+        //            type="text"
+        //            value={values.email}
+        //            placeholder="Email"
+        //            onChange={(e) => inputHadle(e.target.name, e.target.value)}
+        //        />
+        //        <input
+        //            type="text"
+        //            value={values.contact}
+        //            placeholder="Mobile Number"
+        //            onChange={(e) => inputHadle(e.target.name, e.target.value)}
+        //        />
+        //        <button type="submit">Create</button>
+        //    </form>
+        //</div>
+    );
 }
+
+export default App;
+
+//export default Home;
+
+//export class Home extends Component {
+//    static displayName = Home.name;
+
+//    constructor(props) {
+//        super(props);
+//        this.state = {
+//            name: "Ola",
+//            subject: "",
+//            contact: "",
+//            email: "",
+//            message: "",
+//            isValid: false,
+//        };
+//    }
+
+//    async onSubmit(event) {
+//        event.preventDefault();
+//        console.log(this.name);
+//        try {
+//            let res = await fetch("https://localhost:44479/forms/create", {
+//                method: "POST",
+//                body: JSON.stringify({
+//                    name: this.state.name,
+//                    subject: this.state.subject,
+//                    contact: this.state.contact,
+//                    email: this.state.email,
+//                    message: this.state.message,
+//                }),
+//            });
+//            console.log(res);
+//            let resJson = await res.json();
+//            if (res.status === 200) {
+//                this.setState({
+//                    name: "",
+//                    email: ""
+//                });
+//                console.log("User created successfully");
+//            } else {
+//                console.log("Some error occured");
+//            }
+//        } catch (err) {
+//            console.log(err);
+//        }
+//    }
+
+//    handleNameChange = (e) => {
+//        this.setState({
+//            name: e.target.value
+//        });
+//    }
+
+//    handleSubjectChange = (e) => {
+//        this.setState({
+//            subject: e.target.value
+//        });
+//    }
+
+//    handleContactChange = (e) => {
+//        this.setState({
+//            contact: e.target.value
+//        });
+//    }
+
+//    handleEmailChange = (e) => {
+//        this.setState({
+//            email: e.target.value
+//        });
+//    }
+
+//    handleMessageChange = (e) => {
+//        this.setState({
+//            message: e.target.value
+//        });
+//    }
+
+//    render() {
+//        return (
+//            <div className="form-container container">
+//                <form onSubmit={this.onSubmit}>
+//                    <div className="row">
+//                        <div className="col-12 col-md-6">
+//                            <div className="mb-3">
+//                                <label className="form-label">Nome</label>
+//                                <input type="text" className="form-control" name="name" onChange={this.handleNameChange} />
+//                            </div>
+//                        </div>
+//                        <div className="col-12 col-md-6">
+//                            <div className="mb-3">
+//                                <label className="form-label">Assunto</label>
+//                                <input type="text" className="form-control" name="subject" onChange={this.handleSubjectChange} />
+//                            </div>
+//                        </div>
+//                        <div className="col-12 col-md-6">
+//                            <div className="mb-3">
+//                                <label className="form-label">Contacto</label>
+//                                <input type="text" className="form-control" name="contact" onChange={this.handleContactChange} />
+//                            </div>
+//                        </div>
+//                        <div className="col-12 col-md-6">
+//                            <div className="mb-3">
+//                                <label className="form-label">Email</label>
+//                                <input type="email" className="form-control" name="email" onChange={this.handleEmailChange} />
+//                            </div>
+//                        </div>
+//                        <div className="col-12">
+//                            <div className="mb-3">
+//                                <textarea name="message" className="form-control" rows="3" onChange={this.handleMessageChange}></textarea>
+//                            </div>
+//                        </div>
+//                        <div className="col-12 col-md-6">
+//                            <div className="mb-3 form-check">
+//                                <input type="checkbox" className="form-check-input" />
+//                                <label className="form-check-label">Check me out</label>
+//                            </div>
+//                        </div>
+//                    </div>
+//                    <button type="submit" className="btn btn-primary">Enviar</button>
+//                </form>
+//            </div>
+//        );
+//    }
+//}
