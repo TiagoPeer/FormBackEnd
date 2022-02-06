@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 function Home() {
+
     const [values, setValues] = useState({
         name: "",
         subject: "",
@@ -16,10 +17,6 @@ function Home() {
         email: "",
         message: ""
     });
-
-    let handleFocus = (name) => {
-        setErrors({ ...errors, [name]: '' })
-    }
 
     let handleSubmit = async (e) => {
         e.preventDefault();
@@ -64,7 +61,7 @@ function Home() {
                 let resJson = await res.json();
                 console.log(resJson);
                 if (res.status === 200) {
-                    setValues({ ...values, name: "", email: "" })
+                    setValues({ ...values, name: "", email: "", subject: "", message: "", contact: "" })
                 } else {
                 }
             } catch (err) {
@@ -78,7 +75,6 @@ function Home() {
     }
 
     return (
-
         <div className="form-container container">
             <form onSubmit={handleSubmit}>
                 <div className="row">
@@ -148,7 +144,6 @@ function Home() {
                                 name="message"
                                 className="form-control"
                                 rows="3"
-                                name="message"
                                 value={values.message}
                                 onChange={(e) => inputHadle(e.target.name, e.target.value)}>
                             </textarea>
@@ -156,8 +151,8 @@ function Home() {
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="mb-3 form-check">
-                            <input type="checkbox" className="form-check-input" />
-                            <label className="form-check-label">Check me out</label>
+                            <input type="checkbox" className="form-check-input" required="required" />
+                            <label className="form-check-label">Aceito as politicas de tratamento de dados</label>
                         </div>
                     </div>
                 </div>

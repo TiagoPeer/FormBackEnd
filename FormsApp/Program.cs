@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using FormsApp.Data;
 using AutoMapper;
+using FormsApp.Services.Interfaces;
+using FormsApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddTransient<IFormService, FormService>();
 
 var app = builder.Build();
 
