@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 function Home() {
-    const displayName = Home.name;
 
     const [values, setValues] = useState({
         name: "",
@@ -62,7 +61,7 @@ function Home() {
                 let resJson = await res.json();
                 console.log(resJson);
                 if (res.status === 200) {
-                    setValues({ ...values, name: "", email: "" })
+                    setValues({ ...values, name: "", email: "", subject: "", message: "", contact: "" })
                 } else {
                 }
             } catch (err) {
@@ -145,7 +144,6 @@ function Home() {
                                 name="message"
                                 className="form-control"
                                 rows="3"
-                                name="message"
                                 value={values.message}
                                 onChange={(e) => inputHadle(e.target.name, e.target.value)}>
                             </textarea>

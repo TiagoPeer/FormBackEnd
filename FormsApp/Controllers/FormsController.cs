@@ -1,10 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using FormsApp.Data;
 using FormsApp.Dtos;
 using FormsApp.Models;
+using FormsApp.Services.Interfaces;
 
 namespace FormsApp.Controllers
 {
@@ -13,19 +12,19 @@ namespace FormsApp.Controllers
     public class FormsController : ControllerBase
     {
         protected readonly ApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IFormService _formsService;
 
-        public FormsController(ApplicationDbContext dbContext, IMapper mapper)
+        public FormsController(ApplicationDbContext dbContext, IFormService formsService)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
+            _formsService = formsService;
         }
 
         [HttpGet("get-forms")]
         public async Task<IActionResult> GetForms()
         {
-            var forms = await _dbContext.Forms.ToListAsync();
-            return Ok(new ActionResponse("Ok", "200", JsonConvert.SerializeObject(forms)));
+            var res = JsonConvert.SerializeObject(await _formsService.GetAllAsync());
+            return Ok(new ActionResponse("Ok", "200", res));
         }
 
         [HttpPost("create")]
@@ -33,10 +32,7 @@ namespace FormsApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var form = _mapper.Map(dto, new Form());
-                await _dbContext.Forms.AddAsync(form);
-                await _dbContext.SaveChangesAsync();
-
+                await _formsService.CreateAsync(dto);
                 return Ok(new ActionResponse("Created", "201", "Formulário criado com sucesso."));
             }
 
@@ -46,32 +42,43 @@ namespace FormsApp.Controllers
         [HttpPut("mark-as-readed/{*id}")]
         public async Task<IActionResult> MarkAsReaded(Guid id)
         {
-            Console.WriteLine(id);
-            var form = await _dbContext.Forms.FirstOrDefaultAsync(f => f.Id == id);
+            var form = await _formsService.GetById(id);
 
             if (form == null)
             {
-                return Ok(new ActionResponse("No Contet", "204", $"O formulário com o id {id} não foi encontrado."));
+                return Ok(new ActionResponse("No Content", "204", $"O formulário com o id {id} não foi encontrado."));
             }
 
-            form.Readed = !form.Readed;
-            await _dbContext.SaveChangesAsync();
+            await _formsService.MarkAsReaded(form);
             return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
         }
 
         [HttpPut("mark-as-answered/{*id}")]
         public async Task<IActionResult> MarkAsAnswered(Guid id)
         {
-            var form = await _dbContext.Forms.FirstOrDefaultAsync(f => f.Id == id);
+            var form = await _formsService.GetById(id);
 
             if (form == null)
             {
-                return Ok(new ActionResponse("No Contet", "204", "O formulário não foi encontrado."));
+                return Ok(new ActionResponse("No Content", "204", "O formulário não foi encontrado."));
             }
 
-            form.Answered = !form.Answered;
-            await _dbContext.SaveChangesAsync();
+            await _formsService.MarkAsAnswered(form);
             return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
+        }
+
+        [HttpDelete("delete/{*id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var form = await _formsService.GetById(id);
+
+            if (form == null)
+            {
+                return Ok(new ActionResponse("No Content", "204", "O formulário não foi encontrado."));
+            }
+
+            await _formsService.Delete(form);
+            return Ok(new ActionResponse("Ok", "200", "O formulário foi apagado com sucesso."));
         }
     }
 }

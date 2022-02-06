@@ -1,48 +1,62 @@
 import React, { Component } from "react";
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: `https://localhost:44479/forms`
+});
 
 export class FetchData extends Component {
-    static displayName = FetchData.name;
+
+    state = {
+        forms: [],
+        loading: false
+    }
 
     constructor(props) {
         super(props);
-        this.state = { forms: [], loading: true };
+        this.getForms();
     }
 
-    componentDidMount() {
-        this.populateFormsData();
-    }
-
-    static async MarkAsReaded(key) {
+    getForms = async () => {
         try {
-            let res = await fetch("https://localhost:44479/forms/mark-as-readed/" + key, {
-                method: "PUT",
+            let data = await api.get("/get-forms").then(({ data }) => data);
+            this.setState({ forms: JSON.parse(data.message), loading: false });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    markAsReaded = async (id) => {
+        console.log(id);
+        try {
+            await api.put("/mark-as-readed/" + id).then(res => {
+                this.getForms();
             });
-            let resJson = await res.json();
-            console.log(resJson);
-            if (res.status === 200) {
-            } else {
-            }
         } catch (err) {
             console.log(err);
         }
     }
 
-    static async MarkAsAnswered(key) {
+    markAsAnswered = async (id) => {
         try {
-            let res = await fetch("https://localhost:44479/forms/mark-as-answered/" + key, {
-                method: "PUT",
+            await api.put("/mark-as-answered/" + id).then(res => {
+                this.getForms();
             });
-            let resJson = await res.json();
-            console.log(resJson);
-            if (res.status === 200) {
-            } else {
-            }
         } catch (err) {
             console.log(err);
         }
     }
 
-    static renderFormsTable(forms) {
+    deleteForm = async (id) => {
+        try {
+            await api.delete(`delete/${id}`);
+            this.getForms();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    renderFormsTable = (forms) => {
         return (
             <table className="table table-hover">
                 <thead className="thead-dark">
@@ -64,8 +78,10 @@ export class FetchData extends Component {
                             <td>{form.Subject}</td>
                             <td>{form.Email}</td>
                             <td>
-                                <span onClick={() => this.MarkAsReaded(form.Id)}>{form.Readed ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}</span>
-                                <span onClick={() => this.MarkAsAnswered(form.Id)}>{form.Answered ? <i className="fas fa-check"></i> : <i className="fas fa-times"></i>}</span>                                </td>
+                                <span onClick={() => this.markAsReaded(form.Id)}>{form.Readed ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}</span>
+                                <span onClick={() => this.markAsAnswered(form.Id)}>{form.Answered ? <i className="fas fa-check"></i> : <i className="fas fa-times"></i>}</span>
+                                <span onClick={() => this.deleteForm(form.Id)}><i className="fas fa-trash"></i></span>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -79,7 +95,7 @@ export class FetchData extends Component {
                 <em>A carregar...</em>
             </p>
         ) : (
-            FetchData.renderFormsTable(this.state.forms)
+            this.renderFormsTable(this.state.forms)
         );
 
         return (
@@ -89,13 +105,5 @@ export class FetchData extends Component {
                 {contents}
             </div>
         );
-    }
-
-    async populateFormsData() {
-        const response = await fetch("/forms/get-forms");
-        const data = await response.json();
-        this.setState({ forms: JSON.parse(data.message), loading: false });
-
-        this.state.forms.map((form) => console.log(form));
     }
 }
