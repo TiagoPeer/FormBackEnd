@@ -43,22 +43,23 @@ namespace FormsApp.Controllers
             return Ok(new ActionResponse("BadRequest", "400", "Dados inválidos."));
         }
 
-        [HttpPut("mark-as-readed")]
+        [HttpPut("mark-as-readed/{*id}")]
         public async Task<IActionResult> MarkAsReaded(Guid id)
         {
+            Console.WriteLine(id);
             var form = await _dbContext.Forms.FirstOrDefaultAsync(f => f.Id == id);
 
             if (form == null)
             {
-                return Ok(new ActionResponse("No Contet", "204", "O formulário não foi encontrado."));
+                return Ok(new ActionResponse("No Contet", "204", $"O formulário com o id {id} não foi encontrado."));
             }
 
-            form.Readed = true;
+            form.Readed = !form.Readed;
             await _dbContext.SaveChangesAsync();
             return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
         }
 
-        [HttpPut("mark-as-answered")]
+        [HttpPut("mark-as-answered/{*id}")]
         public async Task<IActionResult> MarkAsAnswered(Guid id)
         {
             var form = await _dbContext.Forms.FirstOrDefaultAsync(f => f.Id == id);
@@ -68,7 +69,7 @@ namespace FormsApp.Controllers
                 return Ok(new ActionResponse("No Contet", "204", "O formulário não foi encontrado."));
             }
 
-            form.Answered = true;
+            form.Answered = !form.Answered;
             await _dbContext.SaveChangesAsync();
             return Ok(new ActionResponse("Ok", "200", "Dados atualizados."));
         }

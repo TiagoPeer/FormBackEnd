@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
 function Home() {
+    const displayName = Home.name;
+
     const [values, setValues] = useState({
         name: "",
         subject: "",
@@ -16,10 +18,6 @@ function Home() {
         email: "",
         message: ""
     });
-
-    let handleFocus = (name) => {
-        setErrors({ ...errors, [name]: '' })
-    }
 
     let handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,7 +76,6 @@ function Home() {
     }
 
     return (
-
         <div className="form-container container">
             <form onSubmit={handleSubmit}>
                 <div className="row">
@@ -156,8 +153,8 @@ function Home() {
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="mb-3 form-check">
-                            <input type="checkbox" className="form-check-input" />
-                            <label className="form-check-label">Check me out</label>
+                            <input type="checkbox" className="form-check-input" required="required" />
+                            <label className="form-check-label">Aceito as politicas de tratamento de dados</label>
                         </div>
                     </div>
                 </div>
