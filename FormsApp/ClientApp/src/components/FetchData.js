@@ -20,17 +20,33 @@ export class FetchData extends Component {
     getForms = async () => {
         try {
             let data = await api.get("/get-forms").then(({ data }) => data);
-            this.setState({ forms: JSON.parse(data.message), loading: false });
+            this.setState({ forms: data, loading: false });
         } catch (error) {
             console.log(error);
         }
     }
 
+    updateFormReaded = (id) => {
+        let newList = this.state.forms.map((item) => {
+            if (item.id == id) {
+                const updatedItem = {
+                    ...item,
+                    readed: !item.readed,
+                };
+
+                return updatedItem;
+            }
+
+            return item;
+        })
+
+        this.setState({ forms: newList });
+    }
+
     markAsReaded = async (id) => {
-        console.log(id);
         try {
             await api.put("/mark-as-readed/" + id).then(res => {
-                this.getForms();
+                this.updateFormReaded(id);
             });
         } catch (err) {
             console.log(err);
@@ -71,16 +87,16 @@ export class FetchData extends Component {
                 </thead>
                 <tbody>
                     {forms.map((form) => (
-                        <tr key={form.Id}>
-                            <td>{form.Id}</td>
-                            <td>{form.CreationDate}</td>
-                            <td>{form.Name}</td>
-                            <td>{form.Subject}</td>
-                            <td>{form.Email}</td>
+                        <tr key={form.id}>
+                            <td>{form.id}</td>
+                            <td>{form.creationDate}</td>
+                            <td>{form.name}</td>
+                            <td>{form.subject}</td>
+                            <td>{form.email}</td>
                             <td>
-                                <span onClick={() => this.markAsReaded(form.Id)}>{form.Readed ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}</span>
-                                <span onClick={() => this.markAsAnswered(form.Id)}>{form.Answered ? <i className="fas fa-check"></i> : <i className="fas fa-times"></i>}</span>
-                                <span onClick={() => this.deleteForm(form.Id)}><i className="fas fa-trash"></i></span>
+                                <span onClick={() => this.markAsReaded(form.id)}>{form.readed ? <i className="fas fa-eye-slash"></i> : <i className="fas fa-eye"></i>}</span>
+                                <span onClick={() => this.markAsAnswered(form.id)}>{form.answered ? <i className="fas fa-check"></i> : <i className="fas fa-times"></i>}</span>
+                                <span onClick={() => this.deleteForm(form.id)}><i className="fas fa-trash"></i></span>
                             </td>
                         </tr>
                     ))}

@@ -1,4 +1,5 @@
 import React, { Component, useState } from 'react';
+import axios from "axios";
 
 const api = axios.create({
     baseURL: `https://localhost:44479/forms`
@@ -20,7 +21,6 @@ export class Home extends Component {
 
     constructor(props) {
         super(props);
-        this.getForms();
     }
 
     resetValues = () => {
@@ -35,37 +35,37 @@ export class Home extends Component {
         e.preventDefault();
         let valid = true;
 
-        if (values.name === '') {
+        if (this.state.name === '') {
             this.setState({ errorName: "O nome é obrigatório" });
             valid = false;
         }
 
-        if (values.subject === '') {
+        if (this.state.subject === '') {
             this.setState({ errorSubject: "O assunto é obrigatório" });
             valid = false;
         }
 
-        if (values.contact === '') {
+        if (this.state.contact === '') {
             this.setState({ errorContact: "O contacto é obrigatório" });
             valid = false;
         }
 
-        if (values.email === '') {
+        if (this.state.email === '') {
             this.setState({ errorEmail: "O email é obrigatório" });
             valid = false;
         }
 
         if (valid) {
             try {
-                let res = await api.post("/create", {
-                    name: values.name,
-                    subject: values.subject,
-                    contact: values.contact,
-                    email: values.email,
-                    message: values.message,
+                let data = await api.post("/create", {
+                    name: this.state.name,
+                    subject: this.state.subject,
+                    contact: this.state.values.contact,
+                    email: this.state.values.email,
+                    message: this.state.values.message,
                 }).then(({ data }) => data);
                 console.log(data);
-                if (res.status === 200) {
+                if (data.status === 200) {
                     this.resetValues();
                 }
             } catch (err) {
@@ -75,13 +75,13 @@ export class Home extends Component {
     };
 
     inputHadle = (name, value) => {
-        setValues({ ...values, [name]: value })
+        this.setState({ [name]: value })
     }
 
     render() {
         return (
             <div className="form-container container" >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(e) => this.handleSubmit(e)}>
                     <div className="row">
                         <div className="col-12 col-md-6">
                             <div className="mb-3">
@@ -89,13 +89,12 @@ export class Home extends Component {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={values.name}
+                                    value={this.state.name}
                                     placeholder="Nome"
                                     name="name"
-                                    required="required"
-                                    onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                                    onChange={(e) => this.inputHadle(e.target.name, e.target.value)}
                                 />
-                                <span>{errors.name}</span>
+                                <span>{this.state.errorName}</span>
                             </div>
                         </div>
                         <div className="col-12 col-md-6">
@@ -104,13 +103,12 @@ export class Home extends Component {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={values.subject}
+                                    value={this.state.subject}
                                     placeholder="Assunto"
                                     name="subject"
-                                    required="required"
-                                    onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                                    onChange={(e) => this.inputHadle(e.target.name, e.target.value)}
                                 />
-                                <span>{errors.subject}</span>
+                                <span>{this.state.errorSubject}</span>
                             </div>
                         </div>
                         <div className="col-12 col-md-6">
@@ -119,13 +117,12 @@ export class Home extends Component {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    value={values.contact}
+                                    value={this.state.contact}
                                     placeholder="Contacto"
                                     name="contact"
-                                    required="required"
-                                    onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                                    onChange={(e) => this.inputHadle(e.target.name, e.target.value)}
                                 />
-                                <span>{errors.contact}</span>
+                                <span>{this.state.errorContact}</span>
                             </div>
                         </div>
                         <div className="col-12 col-md-6">
@@ -134,13 +131,12 @@ export class Home extends Component {
                                 <input
                                     type="email"
                                     className="form-control"
-                                    value={values.email}
+                                    value={this.state.email}
                                     placeholder="Email"
                                     name="email"
-                                    required="required"
-                                    onChange={(e) => inputHadle(e.target.name, e.target.value)}
+                                    onChange={(e) => this.inputHadle(e.target.name, e.target.value)}
                                 />
-                                <span>{errors.email}</span>
+                                <span>{this.state.errorEmail}</span>
                             </div>
                         </div>
                         <div className="col-12">
@@ -149,14 +145,14 @@ export class Home extends Component {
                                     name="message"
                                     className="form-control"
                                     rows="3"
-                                    value={values.message}
-                                    onChange={(e) => inputHadle(e.target.name, e.target.value)}>
+                                    value={this.state.message}
+                                    onChange={(e) => this.inputHadle(e.target.name, e.target.value)}>
                                 </textarea>
                             </div>
                         </div>
                         <div className="col-12 col-md-6">
                             <div className="mb-3 form-check">
-                                <input type="checkbox" className="form-check-input" required="required" />
+                                <input type="checkbox" className="form-check-input" />
                                 <label className="form-check-label">Aceito as politicas de tratamento de dados</label>
                             </div>
                         </div>

@@ -49,6 +49,6 @@ namespace FormsApp.Services
             return _dbContext.SaveChangesAsync();
         }
 
-        public Task<Form> GetById(Guid id) => _dbContext.Forms.FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<Form> GetById(Guid id) => await _dbContext.Forms.FindAsync(id);
     }
 }

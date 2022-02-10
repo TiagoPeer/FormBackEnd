@@ -19,10 +19,10 @@ namespace FormsApp.Controllers
         }
 
         [HttpGet("get-forms")]
-        public async Task<IActionResult> GetForms()
+        public async Task<IEnumerable<Form>> GetForms()
         {
-            var res = JsonConvert.SerializeObject(await _formsService.GetAllAsync());
-            return Ok(new ActionResponse("Ok", "200", res));
+            var res = await _formsService.GetAllAsync();
+            return res;
         }
 
         [HttpPost("create")]
