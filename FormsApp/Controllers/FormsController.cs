@@ -11,12 +11,10 @@ namespace FormsApp.Controllers
     [Route("[controller]")]
     public class FormsController : ControllerBase
     {
-        protected readonly ApplicationDbContext _dbContext;
         private readonly IFormService _formsService;
 
         public FormsController(ApplicationDbContext dbContext, IFormService formsService)
         {
-            _dbContext = dbContext;
             _formsService = formsService;
         }
 
